@@ -64,7 +64,86 @@ $$
 
 因此我们需要一个方法高效地来估算这个积分的值，于是我们使用了蒙特卡洛积分。
 
+### 递归路径追踪：
 
+递归路径追踪的核心是：
+
+> $L_i$实际是下一个交点的$L_o$，于是渲染方程可以写成递归的形式
+
+忽略体积介质，考虑表面的渲染方程：
+$$
+L_o(x_0,\omega_o)
+=
+L_e(x_0,\omega_o)
++
+\int_{\Omega_0}
+f_r(x_0,\omega_1,\omega_o)
+L_i(x_0,\omega_1)
+\cos\theta_1
+\,d\omega_1.
+$$
+为了简化符号，定义：
+$$
+f_0
+=
+f_r(x_0,\omega_1,\omega_o),\\
+c_0
+=
+|\cos\theta_1|
+=
+|n_0\cdot\omega_1|.
+$$
+于是：
+$$
+L_o(x_0,\omega_o)
+=
+L_{e,0}
++
+\int_{\Omega_0}
+f_0c_0
+L_i(x_0,\omega_1)
+\,d\omega_1.
+$$
+而$L_i$实际是下一个交点$x_1$的$L_o$，则有：
+$$
+L_i(x_0,\omega_1)
+=
+L_o(x_1,-\omega_1).
+$$
+于是我们把所有的$L_i$写成下一级的$L_o$的形式：
+$$
+L_o(x_0,\omega_o)
+=
+L_{e,0}
++
+\int_{\Omega_0}
+f_0c_0
+L_o(x_1,-\omega_1)
+\,d\omega_1.
+$$
+于是此时我们得出了渲染方程的递归形式。
+
+于是我们将渲染方程递归展开，展开过程见：[蒙特卡洛积分的数学推导](../Mathematic/monte-carlo.md)，最终得到：
+
+展开后的第k项可以写为：
+$$
+I_k
+=
+\int
+\cdots
+\int
+L_{e,k}
+\prod_{j=0}^{k-1}
+f_jc_j
+\,
+d\omega_1\cdots d\omega_k
+$$
+因此最终渲染方程的路径积分展开形式为：
+$$
+L_o
+=
+\sum_{k=0}^{\infty}I_k
+$$
 
 ### 蒙特卡洛方法：
 
@@ -108,7 +187,7 @@ $$
 
 因此，**重要性采样的本质就是选择一个更接近被积函数形状的提案分布，从而减小卡方散度和估计方差**。实际中通常无法直接使用最优分布，只能利用 BRDF、光源分布等已知信息构造对它的近似。
 
-完整证明、方差推导以及它与路径追踪的对应关系见：[蒙特卡洛积分的数学推导](../mathematic/monte-carlo.md)。
+完整证明、方差推导以及它与路径追踪的对应关系见：[蒙特卡洛积分的数学推导](../Mathematic/monte-carlo.md)。
 
 
 
@@ -180,11 +259,68 @@ L_i(\omega_i)
 \cos\theta_i
 \,d\omega_i.
 $$
-令$g(\omega) = \frac{\rho}{\pi} L_i(\omega) \cos\theta$，我们想让$p^*(w)\propto g(w)$,我们可以直接忽略掉前面的BRDF项，因为是个常数，于是我们只需要正比于后面的$L_i(w_i)\cosine \theta_i$即可。
+令$g(\omega_i) = \frac{\rho}{\pi} L_i(\omega_i) \cos\theta$，我们想让$p^*(w_i)\propto g(w_i)$,我们可以直接忽略掉前面的BRDF项，因为是个常数，于是我们只需要正比于后面的$L_i(w_i)\cosine \theta_i$即可。
 
 但是直接正比于这个也很困难，于是我们假设一种理想情况$L_i(w_i)$同样是个常数，那我们只需要构造一个正比于$\cosine\theta_i$的分布即可
 
+于是我们构造一个$p(\omega_i)$，并希望$p(\omega_i)\propto cos\theta_i$，同时因为我们是在上半球面积分，$\theta_i$的范围为：$0<\theta_i<\frac{\pi}{2}$ ，$cos\theta_i$（入射光线和法线的点乘）一定是非负的。
 
+于是得出我们需要去求的$p(\omega_i)$需要满足的两个条件：
 
+（1）$p(\omega_i)$需要具备PDF都具备的归一化，绝对非负的特性
 
+（2）$p(w)\propto cos\theta_i$
 
+令$p(\omega)=\frac{cos\theta_i}{C}$, 此时我们只需要满足$\int_\Omega p(\omega)d\omega=1$即可，最后可以解得$C=\frac{1}{\pi}$，具体的证明过程在：[重要性采样的数学推导](../Mathematic/importance-sampling.md)。
+
+因此可以得出Cosine分布的PDF为：
+$$
+p(\omega)=\frac{cos\theta}{\pi}.
+$$
+有了PDF之后我们可以进行逆变换采样，我们需要生成两个U[0,1]的样本，然后通过求逆变换的方式得到服从Cosine分布的样本
+
+我们令：$\xi_1,\xi_2\sim U[0,1].$
+
+最终通过求逆变换得到的样本$\omega$为：
+$$
+\omega=
+\begin{pmatrix}
+\sqrt{\xi_1}\cos(2\pi\xi_2)\\
+\sqrt{\xi_1}\sin(2\pi\xi_2)\\
+\sqrt{1-\xi_1}
+\end{pmatrix}
+$$
+具体的求逆变换的推导过程在：[重要性采样的数学推导](../Mathematic/importance-sampling.md)。
+
+因为$\cosine\theta=max(0,n\cdot \omega)$，所以原式在$n$确定的情况下可以写成：
+$$
+p(\omega)=\frac{max(0,n\cdot \omega)}{\pi}
+$$
+设我们采样的样本为$w_i \sim p(w)$,则此时我们的蒙特卡洛估计量为：
+$$
+\boxed{
+\hat I(\omega_i)=\rho\,L_i(\omega_i)
+}
+$$
+如果是N个独立样本，则：
+$$
+\boxed{
+\hat I_N
+=
+\frac1N
+\sum_{k=1}^N
+\rho\,L_i(\omega_i^{(k)})
+}
+$$
+如果算上自发光，则当前像素，当前bounce的估计可以写成：
+$$
+\boxed{
+\hat L_o
+=
+L_e(x,\omega_o)
++
+\frac1N
+\sum_{k=1}^N
+\rho\,L_i(\omega_i^{(k)})
+}
+$$
