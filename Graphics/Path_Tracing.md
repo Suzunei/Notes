@@ -123,7 +123,7 @@ L_o(x_1,-\omega_1)
 $$
 于是此时我们得出了渲染方程的递归形式。
 
-于是我们将渲染方程递归展开，展开过程见：[蒙特卡洛积分的数学推导](../Mathematic/monte-carlo.md)，最终得到：
+于是我们将渲染方程递归展开，展开过程见：[渲染方程的路径积分形式推导](../Mathematic/recursive-path-int.md)，最终得到：
 
 展开后的第k项可以写为：
 $$
@@ -144,6 +144,40 @@ L_o
 =
 \sum_{k=0}^{\infty}I_k
 $$
+
+将第k条路径长度的贡献$I_k$展开得：
+$$
+\hat L
+=
+\sum_k\beta_kL_{e,k}.
+$$
+于是我们可以得到两个最核心的递推关系：
+$$
+L\leftarrow L+\beta_k L_{e,k}
+$$
+和
+$$
+\beta_{k+1}=\beta_k \frac{f_kc_k}{p_k}.
+$$
+这也就是实际迭代式Path Tracer的数学形式，其伪代码可以表示为：
+
+```C++
+L = 0;
+throughput = 1;
+
+for each bounce k
+{
+    L += throughput * Le_k;
+
+    throughput *= f_k * cosTheta_k / pdf_k;
+
+    // sample next direction and trace to x_{k+1}
+}
+```
+
+所以每次bounce可以非常简洁的理解为做了两件事：累加$\beta_kL_{e,k}$，更新$\beta_{k+1}$。
+
+其中throughput $\beta_k$本质上就是**从相机到当前顶点之前所有Monte Carlo权重的乘积**
 
 ### 蒙特卡洛方法：
 
@@ -271,7 +305,7 @@ $$
 
 （2）$p(w)\propto cos\theta_i$
 
-令$p(\omega)=\frac{cos\theta_i}{C}$, 此时我们只需要满足$\int_\Omega p(\omega)d\omega=1$即可，最后可以解得$C=\frac{1}{\pi}$，具体的证明过程在：[重要性采样的数学推导](../Mathematic/importance-sampling.md)。
+令$p(\omega)=\frac{cos\theta_i}{C}$, 此时我们只需要满足$\int_\Omega p(\omega)d\omega=1$即可，最后可以解得$C=\pi$，具体的证明过程在：[重要性采样的数学推导](../Mathematic/importance-sampling.md)。
 
 因此可以得出Cosine分布的PDF为：
 $$

@@ -243,9 +243,9 @@ $$
 $$
 \hat I_k = \beta_k L_{e,k}
 $$
-那么累积弹射$k$次的路径追踪的路径积分形式就可以写为：
+那么对一条包含至多$K$次弹射的采样路径，其辐亮度估计量可以写为：
 $$
-L_o=\sum_{k}\beta_kL_{e,k}.
+\hat L_o=\sum_{k=0}^{K}\beta_kL_{e,k}.
 $$
 所以实际Path Tracing最核心的两个递推式其实就是：
 $$
@@ -274,3 +274,4 @@ for each bounce k
 所以每次bounce可以非常简洁的理解为做了两件事：累加$\beta_kL_{e,k}$，更新$\beta_{k+1}$。
 
 其中throughput $\beta_k$本质上就是**从相机到当前顶点之前所有Monte Carlo权重的乘积**
+
