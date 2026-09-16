@@ -141,7 +141,6 @@ $$
 
 一般第$k$项可以写成：
 $$
-
 \boxed{
 I_k
 =
@@ -160,3 +159,118 @@ $$
 L_o=\sum_{k=0}^{\infty}I_k
 $$
 这就是一种比较直观的path intergral展开形式。
+
+#### 路径的蒙特卡洛估计器：
+
+多维积分的蒙特卡洛方法及其推导见：[蒙特卡洛积分的数学推导](../Mathematic/monte-carlo.md)。
+
+我们首先需要把“路径”当做一个随机变量，在路径追踪中，一条长度为k的路径可以表示成：
+$$
+\bar x = (x_0,x_1,...,x_k).
+$$
+或者如果我们用方向来参数化：
+$$
+\bar \omega = (w_1,w_2,...,w_k).
+$$
+于是我们可以认为：**一整条路径就是一个高维随机变量**
+
+例如一个两bounce路径：
+$$
+C
+\rightarrow x_0
+\rightarrow x_1
+\rightarrow x_2
+$$
+由$(w_1,w_2)$共同决定。
+
+对于长度k的积分：
+$$
+I_k
+=
+\int\cdots\int
+L_{e,k}
+\prod_{j=0}^{k-1}f_jc_j
+\,
+d\omega_1\cdots d\omega_k.
+$$
+其蒙特卡洛估计器为：
+$$
+\hat I_k =\frac{L_{e,k}
+\prod_{j=0}^{k-1}f_jc_j}{p(w_1,...,w_k)}
+$$
+而我们在相交表面基于局部法线方向构建的提案分布，从本质上来说是一个基于前几次弹射的条件分布，因此我们可以把联合分布写成：
+$$
+\boxed{
+p(\omega_1,\omega_2,\ldots,\omega_k)
+=
+p(\omega_1)\,
+p(\omega_2\mid\omega_1)\,
+p(\omega_3\mid\omega_1,\omega_2)
+\cdots
+p(\omega_k\mid\omega_1,\ldots,\omega_{k-1})
+}
+$$
+而实际上来说我们每次bounce中基于局部法线方向构建的提案分布，在路径视角来看都是由前N次bounce共同决定的**条件分布**
+
+因此路径积分的蒙特卡洛估计器中的联合分布可以写成每次bounce中的局部视角的提案分布的乘积的形式：
+$$
+p(\omega_1,\ldots,\omega_k)
+=
+\prod_jp_j(\omega_{j+1})
+$$
+因此，第k长度路径的积分的蒙特卡洛估计器可以重新写为：
+$$
+\hat I_k =\frac{L_{e,k}
+\prod_{j=0}^{k-1}f_jc_j}{\prod_{j=0}^{k-1}p_j(\omega_{j+1})}
+$$
+我们重新化简一下这个式子，为了简洁记号，我们首先令：
+$$
+p_j=p_j(\omega_{j+1}).
+$$
+上面的k长度路径的积分的蒙特卡洛估计器可以重新写为：
+$$
+\hat I_k
+=
+L_{e,k}
+\prod_{j=0}^{k-1}
+\frac{f_jc_j}{p_j}
+$$
+于是我们定义throughput:
+$$
+\beta_k = \prod_{j=0}^{k-1}\frac{f_jc_j}{p_j}.
+$$
+于是：
+$$
+\hat I_k = \beta_k L_{e,k}
+$$
+那么累积弹射$k$次的路径追踪的路径积分形式就可以写为：
+$$
+L_o=\sum_{k}\beta_kL_{e,k}.
+$$
+所以实际Path Tracing最核心的两个递推式其实就是：
+$$
+L\leftarrow L+\beta_k L_{e,k}
+$$
+和
+$$
+\beta_{k+1}=\beta_k \frac{f_kc_k}{p_k}.
+$$
+这也就是实际迭代式Path Tracer的数学形式，其伪代码可以表示为：
+
+```c++
+L = 0;
+throughput = 1;
+
+for each bounce k
+{
+    L += throughput * Le_k;
+
+    throughput *= f_k * cosTheta_k / pdf_k;
+
+    // sample next direction and trace to x_{k+1}
+}
+```
+
+所以每次bounce可以非常简洁的理解为做了两件事：累加$\beta_kL_{e,k}$，更新$\beta_{k+1}$。
+
+其中throughput $\beta_k$本质上就是**从相机到当前顶点之前所有Monte Carlo权重的乘积**
