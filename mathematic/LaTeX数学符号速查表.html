@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>数学写作 LaTeX 符号速查表</title>
+<style>
+:root{
+  --bg:#f7f8fa; --card:#fff; --ink:#1f2430; --muted:#6b7280;
+  --accent:#4f46e5; --line:#e5e7eb; --code-bg:#f6f7f9;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  font-size:15px;line-height:1.6}
+header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:13px 22px;
+  display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+header h1{font-size:18px;margin:0;font-weight:700;letter-spacing:.3px}
+header .sub{color:var(--muted);font-size:13px}
+#q{flex:1;min-width:170px;max-width:330px;padding:8px 12px;border:1px solid var(--line);
+  border-radius:8px;font-size:14px;outline:none;background:#fff}
+#q:focus{border-color:var(--accent)}
+.btn{padding:8px 12px;border:1px solid var(--line);background:#fff;border-radius:8px;
+  cursor:pointer;font-size:13px;color:var(--ink)}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.layout{display:flex;gap:24px;max-width:1500px;margin:0 auto;padding:20px 22px 60px}
+nav{position:sticky;top:74px;align-self:flex-start;width:180px;flex:none;
+  max-height:calc(100vh - 100px);overflow:auto;font-size:13.5px}
+nav a{display:block;padding:5px 10px;color:var(--muted);text-decoration:none;
+  border-left:2px solid transparent;border-radius:0 6px 6px 0}
+nav a:hover{color:var(--accent);background:#eef2ff;border-left-color:var(--accent)}
+main{flex:1;min-width:0}
+section{margin-bottom:34px;scroll-margin-top:80px}
+section h2{font-size:16.5px;margin:0 0 12px;padding-bottom:8px;border-bottom:2px solid var(--accent);
+  display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+section h2 span{font-size:12px;color:var(--muted);font-weight:400}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:12px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;
+  display:flex;flex-direction:column;gap:6px;min-width:0}
+.sym{font-size:18px;text-align:center;padding:6px 4px;min-height:46px;display:flex;
+  align-items:center;justify-content:center;overflow-x:auto}
+.code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;
+  background:var(--code-bg);border:1px solid var(--line);border-radius:6px;padding:5px 8px;
+  color:#b91c1c;cursor:pointer;white-space:pre-wrap;word-break:break-word}
+.code:hover{border-color:var(--accent)}
+.note{font-size:12.5px;color:var(--muted);line-height:1.45}
+.demo{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.demo .rt{padding:6px 0 10px;overflow-x:auto;text-align:center}
+.demo pre{margin:0;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;
+  background:var(--code-bg);border:1px solid var(--line);border-radius:6px;padding:10px 12px;
+  overflow-x:auto;color:#1f2937;cursor:pointer}
+.demo .note{margin-top:8px}
+.hide{display:none}
+#toast{position:fixed;left:50%;bottom:34px;transform:translateX(-50%);background:#111827;color:#fff;
+  padding:8px 16px;border-radius:8px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;z-index:50}
+#toast.on{opacity:1}
+@media(max-width:900px){nav{display:none}}
+@media print{
+  header,nav,#toast{display:none!important}
+  body{background:#fff}
+  .layout{padding:0;max-width:none;display:block}
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .item,.demo{break-inside:avoid}
+}
+</style>
+<script>
+window.MathJax={
+  tex:{packages:{'[+]':['ams','mathtools','boldsymbol','cancel','empheq','braket','extpfeil','upgreek','color','textmacros','noundefined']},
+       inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']]},
+  options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']},
+  svg:{fontCache:'global'},
+  startup:{ready(){MathJax.startup.defaultReady();
+    MathJax.startup.promise.then(function(){window.__ts=function(){return MathJax.typesetPromise();};
+      if(window.__pending){window.__pending=false;window.__ts();}});}}
+};
+</script>
+</head>
+<body>
+<header>
+  <h1>数学写作 LaTeX 符号速查表</h1>
+  <span class="sub">点击代码即复制</span>
+  <input id="q" placeholder="搜索：积分 / \sum / 范数 / 矩阵 …">
+  <button class="btn" id="pb">打印 / 存为 PDF</button>
+</header>
+<div class="layout">
+  <nav id="toc"></nav>
+  <main id="content"></main>
+</div>
+<div id="toast">已复制</div>
+
+<script>
+const L=String.raw;
+const I=(t,c,n)=>({t:t,c:(c||t),n:n});
+const D=(t,c,n)=>({d:1,t:t,c:c,n:n});
+const C=(c,n)=>({o:1,c:c,n:n});
+
+const S=[
+{id:'basic',name:'一、基础语法',hint:'行内 $…$　行间 $$…$$ 或 \\[...\\]',items:[
+ I(L`x^{2}`,0,'上标'),
+ I(L`x^{n+1}`,0,'多字符上标必须加花括号'),
+ I(L`x_{i}`,0,'下标'),
+ I(L`a_{i,j}`,0,'多重下标'),
+ I(L`f'(x)`,0,'导数撇号'),
+ I(L`f''(x)`,0,'二阶导（连写两个撇号）'),
+ I(L`\frac{a}{b}`,0,'分式'),
+ I(L`\dfrac{a}{b}`,0,'行内强制用「大」分式'),
+ I(L`\tfrac{1}{2}`,0,'行内「小」分式'),
+ I(L`\sqrt{x}`,0,'根号'),
+ I(L`\sqrt[n]{x}`,0,'n 次根'),
+ I(L`a\,b`,0,'细空格，最常见的间距微调'),
+ I(L`a\;b`,0,'粗空格'),
+ I(L`a\!b`,0,'负空格，收紧间距'),
+ I(L`a\quad b`,0,'1 em 空格'),
+ I(L`a\qquad b`,0,'2 em 空格'),
+ I(L`1,2,\dots,n`,0,'省略号（自动判断方向）'),
+ I(L`a_1+\cdots+a_n`,0,'居中省略号，用于运算式'),
+ I(L`\vdots`,0,'竖向省略号，矩阵常用'),
+ I(L`\ddots`,0,'斜向省略号'),
+ I(L`30^\circ`,0,'角度符号'),
+ I(L`50\%`,0,'百分号在 LaTeX 中需转义'),
+ I(L`x \stackrel{\mathrm{def}}{=} y`,0,'「定义为」'),
+ I(L`x \overset{f}{\longrightarrow} y`,0,'在符号上方加标注'),
+ I(L`\underset{x\in X}{\operatorname{argmin}}`,0,'在符号下方加标注')
+]},
+
+{id:'greek',name:'二、希腊字母',hint:'小写 / 变体 / 大写',items:[
+ I(L`\alpha`,0,'α：角度、系数、显著性水平'),
+ I(L`\beta`,0,'β：回归系数、第二类错误'),
+ I(L`\gamma`,0,'γ：常数、Γ 函数的自变量'),
+ I(L`\delta`,0,'δ：微小增量、克罗内克 δ'),
+ I(L`\epsilon`,0,'ε：任意小正数'),
+ I(L`\varepsilon`,0,'ε 的另一种写法'),
+ I(L`\zeta`,0,'ζ：黎曼 ζ 函数'),
+ I(L`\eta`,0,'η：效率、学习率'),
+ I(L`\theta`,0,'θ：参数、角度'),
+ I(L`\vartheta`,0,'θ 的另一种写法'),
+ I(L`\iota`,0,'ι'),
+ I(L`\kappa`,0,'κ：曲率、条件数'),
+ I(L`\lambda`,0,'λ：特征值、拉格朗日乘子'),
+ I(L`\mu`,0,'μ：均值、测度'),
+ I(L`\nu`,0,'ν：自由度、频率'),
+ I(L`\xi`,0,'ξ：随机变量'),
+ I(L`\pi`,0,'π：圆周率'),
+ I(L`\varpi`,0,'π 的另一种写法'),
+ I(L`\rho`,0,'ρ：相关系数、密度'),
+ I(L`\varrho`,0,'ρ 的另一种写法'),
+ I(L`\sigma`,0,'σ：标准差、σ-代数'),
+ I(L`\varsigma`,0,'ς：词尾 σ'),
+ I(L`\tau`,0,'τ：时间常数、tau'),
+ I(L`\upsilon`,0,'υ'),
+ I(L`\phi`,0,'φ：相位角、欧拉函数'),
+ I(L`\varphi`,0,'φ 的另一种写法（更常用）'),
+ I(L`\chi`,0,'χ：卡方分布'),
+ I(L`\psi`,0,'ψ：波函数'),
+ I(L`\omega`,0,'ω：角频率、样本点'),
+ I(L`\Gamma`,0,'Γ：Gamma 函数 / 上界记号'),
+ I(L`\Delta`,0,'Δ：增量、判别式、拉普拉斯算子'),
+ I(L`\Theta`,0,'Θ：渐进紧界、参数空间'),
+ I(L`\Lambda`,0,'Λ：特征值对角阵、似然比'),
+ I(L`\Xi`,0,'Ξ'),
+ I(L`\Pi`,0,'Π：连乘'),
+ I(L`\Sigma`,0,'Σ：求和、协方差矩阵'),
+ I(L`\Upsilon`,0,'Υ'),
+ I(L`\Phi`,0,'Φ：标准正态分布函数'),
+ I(L`\Psi`,0,'Ψ'),
+ I(L`\Omega`,0,'Ω：样本空间、渐进下界')
+]},
+
+{id:'font',name:'三、数学字体',hint:'区分「字体」是数学排版的基本功',items:[
+ I(L`\mathrm{d}x`,0,'正体：微分 d、单位、英文下标必用'),
+ I(L`\mathbf{v}`,0,'粗体：向量、矩阵'),
+ I(L`\mathit{var}`,0,'斜体'),
+ I(L`\mathsf{A}`,0,'无衬线体'),
+ I(L`\mathtt{code}`,0,'等宽体（打字机体）'),
+ I(L`\mathbb{R}`,0,'空心体：数集专用，需 amssymb'),
+ I(L`\mathcal{F}`,0,'花体：函数空间、变换、集合族'),
+ I(L`\mathscr{L}`,0,'手写花体：LaTeX 需 mathrsfs 宏包'),
+ I(L`\mathfrak{g}`,0,'哥特体：李代数、理想'),
+ I(L`\boldsymbol{\alpha}`,0,'希腊字母加粗（amsmath 自带）'),
+ I(L`\bm{x}`,0,'bm 宏包写法，比 boldsymbol 更稳'),
+ I(L`\text{若 } x>0`,0,'公式中插入中文或正文文字'),
+ I(L`\mathbf{0}`,0,'粗体零向量'),
+ I(L`\mathrm{e}^{x}`,0,'自然常数 e 应排正体')
+]},
+
+{id:'setnum',name:'四、常用数集与常量',items:[
+ I(L`\mathbb{R}`,0,'实数集'),
+ I(L`\mathbb{R}^{n}`,0,'n 维欧氏空间'),
+ I(L`\mathbb{R}_{\ge 0}`,0,'非负实数'),
+ I(L`\mathbb{N}`,0,'自然数集'),
+ I(L`\mathbb{Z}`,0,'整数集'),
+ I(L`\mathbb{Z}^{+}`,0,'正整数'),
+ I(L`\mathbb{Q}`,0,'有理数集'),
+ I(L`\mathbb{C}`,0,'复数集'),
+ I(L`\mathbb{F}`,0,'一般域'),
+ I(L`\mathbb{H}`,0,'四元数 / 希尔伯特空间'),
+ I(L`\mathbb{P}`,0,'概率测度'),
+ I(L`\mathbb{E}[X]`,0,'数学期望（也可 \operatorname{E}）'),
+ I(L`\varnothing`,0,'空集（\emptyset 同效）'),
+ I(L`\infty`,0,'无穷'),
+ I(L`\partial`,0,'偏导符号 ∂'),
+ I(L`\nabla`,0,'梯度 / 散度算子 ∇'),
+ I(L`\ell`,0,'手写体 l，避免与 1 混淆'),
+ I(L`\hbar`,0,'约化普朗克常数'),
+ I(L`\Re`,0,'实部（amssymb）'),
+ I(L`\Im`,0,'虚部（amssymb）')
+]},
+
+{id:'binop',name:'五、二元运算符',items:[
+ I(L`\pm`,0,'正负号 ±'),
+ I(L`\mp`,0,'负正号 ∓'),
+ I(L`\times`,0,'叉乘 ×'),
+ I(L`\div`,0,'除号 ÷'),
+ I(L`\cdot`,0,'点乘，向量内积常用'),
+ I(L`\ast`,0,'星号 ∗（卷积）'),
+ I(L`\star`,0,'五角星运算符'),
+ I(L`\circ`,0,'函数复合 ∘'),
+ I(L`\bullet`,0,'实心点'),
+ I(L`\oplus`,0,'直和 ⊕'),
+ I(L`\ominus`,0,'⊖'),
+ I(L`\otimes`,0,'张量积 ⊗ / 克罗内克积'),
+ I(L`\odot`,0,'逐元素乘 ⊙'),
+ I(L`\oslash`,0,'⊘'),
+ I(L`\wedge`,0,'楔积 / 逻辑与'),
+ I(L`\vee`,0,'∨ 逻辑或'),
+ I(L`\cap`,0,'交集'),
+ I(L`\cup`,0,'并集'),
+ I(L`\setminus`,0,'集合差 ∖'),
+ I(L`\uplus`,0,'多重集并'),
+ I(L`\sqcup`,0,'不交并 ⊔'),
+ I(L`\sqcap`,0,'⊓'),
+ I(L`\triangleleft`,0,'◁ 正规子群'),
+ I(L`\triangleright`,0,'▷'),
+ I(L`\diamond`,0,'◇'),
+ I(L`\wr`,0,'圈积 ≀'),
+ I(L`a \bmod b`,0,'二元取模（二元运算符）'),
+ I(L`a \equiv b \pmod{n}`,0,'同余式，pmod 带括号')
+]},
+
+{id:'rel',name:'六、关系符号',items:[
+ I(L`=`,0,'等于'),
+ I(L`\neq`,0,'不等于（\ne 同效）'),
+ I(L`\leq`,0,'小于等于（\le 同效）'),
+ I(L`\geq`,0,'大于等于（\ge 同效）'),
+ I(L`\leqslant`,0,'≤ 的斜体变体（amssymb）'),
+ I(L`\geqslant`,0,'≥ 的斜体变体（amssymb）'),
+ I(L`\ll`,0,'远小于'),
+ I(L`\gg`,0,'远大于'),
+ I(L`\approx`,0,'约等于 ≈'),
+ I(L`\equiv`,0,'恒等于 / 同余 ≡'),
+ I(L`\sim`,0,'同阶 / 服从某分布 ∼'),
+ I(L`\simeq`,0,'≃ 渐近相等'),
+ I(L`\cong`,0,'全等 / 同构 ≅'),
+ I(L`\asymp`,0,'≍ 同阶'),
+ I(L`\propto`,0,'正比于 ∝'),
+ I(L`\doteq`,0,'≐ 定义相等'),
+ I(L`\triangleq`,0,'≜ 记作'),
+ I(L`\coloneqq`,0,'≔ 定义为（需 mathtools）'),
+ I(L`\prec`,0,'≺ 前序'),
+ I(L`\succ`,0,'≻ 后继'),
+ I(L`\preceq`,0,'⪯ 前序且可等'),
+ I(L`\succeq`,0,'⪰'),
+ I(L`\perp`,0,'垂直 ⊥'),
+ I(L`\parallel`,0,'平行 ∥'),
+ I(L`\mid`,0,'整除 / 条件分隔「使得」'),
+ I(L`\nmid`,0,'不整除 ∤'),
+ I(L`\smile`,0,'⌣'),
+ I(L`\frown`,0,'⌢'),
+ I(L`a \not< b`,0,'\not 加在任意关系符前表示取反'),
+ I(L`\nleq`,0,'≰（amssymb）'),
+ I(L`\ngeq`,0,'≱（amssymb）'),
+ I(L`\nsubseteq`,0,'⊈（amssymb）'),
+ I(L`\nrightarrow`,0,'↛（amssymb）')
+]},
+
+{id:'setop',name:'七、集合符号',items:[
+ I(L`\in`,0,'属于 ∈'),
+ I(L`\notin`,0,'不属于 ∉'),
+ I(L`\ni`,0,'包含（反向属于）∋'),
+ I(L`\subset`,0,'子集 ⊂'),
+ I(L`\subseteq`,0,'子集（可相等）⊆'),
+ I(L`\subsetneq`,0,'真子集 ⊊（amssymb）'),
+ I(L`\supset`,0,'超集 ⊃'),
+ I(L`\supseteq`,0,'⊇'),
+ I(L`\supsetneq`,0,'真超集 ⊋（amssymb）'),
+ I(L`\cap`,0,'交 ∩'),
+ I(L`\cup`,0,'并 ∪'),
+ I(L`\setminus`,0,'差集 ∖'),
+ I(L`\complement`,0,'补集 ∁（amssymb）'),
+ I(L`\varnothing`,0,'空集 ∅'),
+ I(L`\mathcal{P}(X)`,0,'幂集'),
+ I(L`2^{X}`,0,'幂集的另一种写法'),
+ I(L`\bigcap_{i} A_i`,0,'大交（可缩放）'),
+ I(L`\bigcup_{i} A_i`,0,'大并（可缩放）'),
+ I(L`\bigsqcup_{i} A_i`,0,'不交大并'),
+ I(L`|A|`,0,'集合基数 / 绝对值'),
+ I(L`\#A`,0,'集合元素个数（\# 为井号转义）'),
+ I(L`\overline{A}`,0,'闭包 / 补集'),
+ I(L`A^{\circ}`,0,'内部（点集拓扑）')
+]},
+
+{id:'logic',name:'八、逻辑与量词',items:[
+ I(L`\forall`,0,'任意 ∀'),
+ I(L`\exists`,0,'存在 ∃'),
+ I(L`\nexists`,0,'不存在 ∄（amssymb）'),
+ I(L`\exists!`,0,'唯一存在'),
+ I(L`\neg P`,0,'非 ¬（\lnot 同效）'),
+ I(L`P \land Q`,0,'且 ∧'),
+ I(L`P \lor Q`,0,'或 ∨'),
+ I(L`\oplus`,0,'异或 ⊕'),
+ I(L`P \implies Q`,0,'推出 ⟹（amsmath）'),
+ I(L`P \impliedby Q`,0,'反向推出 ⟸'),
+ I(L`P \iff Q`,0,'等价于 ⟺（amsmath）'),
+ I(L`\to`,0,'蕴含 →（\rightarrow 同效）'),
+ I(L`\gets`,0,'←'),
+ I(L`\leftrightarrow`,0,'↔'),
+ I(L`\vdash`,0,'可证 ⊢'),
+ I(L`\dashv`,0,'⊣'),
+ I(L`\models`,0,'语义蕴含 ⊨'),
+ I(L`\therefore`,0,'因此 ∴（amssymb）'),
+ I(L`\because`,0,'因为 ∵（amssymb）'),
+ I(L`\top`,0,'真 ⊤'),
+ I(L`\bot`,0,'假 / 垂直 ⊥')
+]},
+
+{id:'arrow',name:'九、箭头',items:[
+ I(L`\to`,0,'→ 映射、趋向（最常用）'),
+ I(L`\rightarrow`,0,'→ 同 \to'),
+ I(L`\leftarrow`,0,'←'),
+ I(L`\leftrightarrow`,0,'↔'),
+ I(L`\Rightarrow`,0,'⇒ 推出'),
+ I(L`\Leftarrow`,0,'⇐'),
+ I(L`\Leftrightarrow`,0,'⇔ 等价于'),
+ I(L`\longrightarrow`,0,'⟶ 长箭头'),
+ I(L`\longleftarrow`,0,'⟵'),
+ I(L`\longleftrightarrow`,0,'⟷'),
+ I(L`\Longrightarrow`,0,'⟹ 长推出号'),
+ I(L`\Longleftarrow`,0,'⟸'),
+ I(L`\Longleftrightarrow`,0,'⟺ 长等价号'),
+ I(L`\mapsto`,0,'↦ 元素映射'),
+ I(L`\longmapsto`,0,'⟼'),
+ I(L`\hookrightarrow`,0,'↪ 嵌入'),
+ I(L`\hookleftarrow`,0,'↩'),
+ I(L`\rightharpoonup`,0,'⇀ 弱收敛'),
+ I(L`\nearrow`,0,'↗ 单调递增趋近'),
+ I(L`\searrow`,0,'↘ 单调递减趋近'),
+ I(L`\swarrow`,0,'↙'),
+ I(L`\nwarrow`,0,'↖'),
+ I(L`\uparrow`,0,'↑'),
+ I(L`\downarrow`,0,'↓'),
+ I(L`\updownarrow`,0,'↕'),
+ I(L`\Uparrow`,0,'⇑'),
+ I(L`\Downarrow`,0,'⇓'),
+ I(L`\Updownarrow`,0,'⇕'),
+ I(L`\rightsquigarrow`,0,'⇝ 弱收敛 / 分布收敛（amssymb）'),
+ I(L`\xrightarrow{f}`,0,'带上方标签的箭头（amsmath）'),
+ I(L`\xleftarrow{g}`,0,'带上方标签的左箭头'),
+ I(L`\xrightarrow[n]{f}`,0,'上下双标签'),
+ I(L`\xRightarrow{\text{引理 2}}`,0,'带标签的推出号'),
+ I(L`\xrightleftharpoons[k_2]{k_1}`,0,'可逆反应 / 双向箭头（amsmath）'),
+ I(L`\leadsto`,0,'⇝（amssymb，同 rightsquigarrow）')
+]},
+
+{id:'bigop',name:'十、大型运算符',hint:'行间公式默认上下限在正上下，行内则移到右下角',items:[
+ I(L`\sum_{i=1}^{n} a_i`,0,'求和'),
+ I(L`\prod_{i=1}^{n} a_i`,0,'连乘'),
+ I(L`\coprod_{i} A_i`,0,'余积'),
+ I(L`\int_{a}^{b} f(x)\,\mathrm{d}x`,0,'定积分'),
+ I(L`\iint_{D} f`,0,'二重积分（amsmath）'),
+ I(L`\iiint_{V} f`,0,'三重积分（amsmath）'),
+ I(L`\oint_{C} F`,0,'闭路积分（amsmath）'),
+ I(L`\oiint_{S} F`,0,'闭曲面积分（需 esint/amsmath 扩展）'),
+ I(L`\bigcup_{i=1}^{n} A_i`,0,'大并集'),
+ I(L`\bigcap_{i=1}^{n} A_i`,0,'大交集'),
+ I(L`\bigvee_{i} P_i`,0,'大析取'),
+ I(L`\bigwedge_{i} P_i`,0,'大合取'),
+ I(L`\bigoplus_{i} V_i`,0,'大直和'),
+ I(L`\bigotimes_{i} V_i`,0,'大张量积'),
+ I(L`\bigodot_{i} A_i`,0,'大逐元素积'),
+ I(L`\biguplus_{i} A_i`,0,'大多重集并'),
+ D(L`\sum\limits_{i=1}^{n} a_i`,L`\sum\limits_{i=1}^{n} a_i`,
+   '\\limits：强制上下限置于正上/下方（行内公式也生效）'),
+ D(L`\int\nolimits_{0}^{1} f(x)\,\mathrm{d}x`,L`\int\nolimits_{0}^{1} f(x)\,\mathrm{d}x`,
+   '\\nolimits：上下限移到右侧（行间公式里压缩用）'),
+ D(L`\sum_{\substack{1\le i\le n\\ 1\le j\le m}} a_{ij}`,
+   L`\sum_{\substack{1\le i\le n\\ 1\le j\le m}} a_{ij}`,
+   '\\substack：上下限写多行（amsmath）')
+]},
+
+{id:'oper',name:'十一、极限、算子与自定义函数名',hint:'算子名必须排正体，切勿直接写 sin / lim',items:[
+ I(L`\lim_{n\to\infty} a_n`,0,'极限'),
+ I(L`\limsup_{n\to\infty}`,0,'上极限'),
+ I(L`\liminf_{n\to\infty}`,0,'下极限'),
+ I(L`\sup_{x\in X}`,0,'上确界'),
+ I(L`\inf_{x\in X}`,0,'下确界'),
+ I(L`\max_{x}`,0,'最大值'),
+ I(L`\min_{x}`,0,'最小值'),
+ I(L`\operatorname*{argmax}_{x} f(x)`,0,'取最大值的自变量（mathtools 的 * 让下标居正下方）'),
+ I(L`\operatorname*{argmin}_{x} f(x)`,0,'取最小值的自变量'),
+ I(L`\det A`,0,'行列式'),
+ I(L`\gcd(a,b)`,0,'最大公约数'),
+ I(L`\deg P`,0,'次数'),
+ I(L`\dim V`,0,'维数'),
+ I(L`\ker T`,0,'核'),
+ I(L`\operatorname{Hom}(A,B)`,0,'同态群'),
+ I(L`\Pr[X>0]`,0,'概率（专用算子，勿用 P）'),
+ I(L`\operatorname{Var}(X)`,0,'方差：用 \operatorname 自定义'),
+ I(L`\operatorname{Cov}(X,Y)`,0,'协方差'),
+ I(L`\operatorname{tr}(A)`,0,'矩阵的迹'),
+ I(L`\operatorname{rank}(A)`,0,'秩'),
+ I(L`\operatorname{sgn}(x)`,0,'符号函数'),
+ C(L`\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator*{\argmin}{arg\,min}`,
+   '导言区一次性定义算子名：带 * 的版本使上下限居正下方（需 amsmath/mathtools）')
+]},
+
+{id:'calc',name:'十二、微积分与分析',items:[
+ I(L`\frac{\partial f}{\partial x}`,0,'偏导数（∂ 用 \partial）'),
+ I(L`\frac{\mathrm{d}y}{\mathrm{d}x}`,0,'全导数，d 必须排正体'),
+ I(L`\frac{\partial^2 f}{\partial x^2}`,0,'二阶偏导'),
+ I(L`\nabla f`,0,'梯度'),
+ I(L`\nabla\cdot F`,0,'散度'),
+ I(L`\nabla\times F`,0,'旋度'),
+ I(L`\Delta u`,0,'拉普拉斯算子'),
+ I(L`\lVert x \rVert`,0,'范数（双竖线，推荐 \lVert\rVert）'),
+ I(L`\lVert x \rVert_{2}`,0,'带下标的范数'),
+ I(L`\lvert x \rvert`,0,'绝对值（单竖线）'),
+ I(L`\langle u,v\rangle`,0,'内积，务必用 \langle\rangle 而非 < >'),
+ I(L`[a,b]`,0,'闭区间'),
+ I(L`(a,b)`,0,'开区间'),
+ I(L`\dot{x}`,0,'对时间的一阶导'),
+ I(L`\ddot{x}`,0,'对时间的二阶导'),
+ I(L`\mathscr{L}\{f\}`,0,'拉普拉斯变换'),
+ I(L`\mathcal{F}\{f\}`,0,'傅里叶变换'),
+ I(L`f \ast g`,0,'卷积'),
+ I(L`\int_{-\infty}^{\infty}`,0,'无穷限积分'),
+ I(L`\left.\frac{\mathrm{d}y}{\mathrm{d}x}\right|_{x=0}`,0,'在某点求导数值（单边定界符）'),
+ D(L`\underbrace{a_1+a_2+\cdots+a_n}_{n\ \text{项}}`,
+   L`\underbrace{a_1+a_2+\cdots+a_n}_{n\ \text{项}}`,
+   '\\underbrace / \\overbrace：下方/上方大括号标注'),
+ D(L`\overbrace{x_1+\dots+x_k}^{k\ \text{个}}`,
+   L`\overbrace{x_1+\dots+x_k}^{k\ \text{个}}`,
+   '\\overbrace：上方大括号')
+]},
+
+{id:'delim',name:'十三、定界符与括号',items:[
+ I(L`(a+b)`,0,'圆括号'),
+ I(L`[a+b]`,0,'方括号'),
+ I(L`\{a,b\}`,0,'花括号（\{ \} 需转义）'),
+ I(L`\langle a,b\rangle`,0,'尖括号 ⟨ ⟩'),
+ I(L`\lceil x \rceil`,0,'上取整 ⌈ ⌉'),
+ I(L`\lfloor x \rfloor`,0,'下取整 ⌊ ⌋'),
+ I(L`\lvert x \rvert`,0,'绝对值单竖线'),
+ I(L`\lVert x \rVert`,0,'范数双竖线'),
+ I(L`|a|`,0,'直接用竖线（简易写法）'),
+ I(L`\left(\frac{a}{b}\right)`,0,'\\left…\\right：括号高度自动匹配内容'),
+ I(L`\left[\sum_{i} a_i\right]`,0,'自适应方括号'),
+ I(L`\left\{x \mid x>0\right\}`,0,'集合构造式，\mid 作「使得」'),
+ I(L`\bigl( x \bigr)`,0,'手动指定一级大小（\\bigl…\\bigr）'),
+ I(L`\Bigl( \frac{a}{b} \Bigr)`,0,'二级大小'),
+ I(L`\biggl( \frac{a}{b} \biggr)`,0,'三级大小'),
+ I(L`\Biggl( \frac{a}{b} \Biggr)`,0,'四级大小'),
+ I(L`\binom{n}{k}`,0,'二项式系数（amssymb/amsmath）'),
+ I(L`{n \choose k}`,0,'二项式系数的旧写法'),
+ D(L`\left\{ \begin{aligned} a &= b \\ c &= d \end{aligned} \right.`,
+   L`\left\{ \begin{aligned} a &= b \\ c &= d \end{aligned} \right.`,
+   '只显示左括号：右侧用 \\right. 收尾（点号占位）')
+]},
+
+{id:'accent',name:'十四、顶标与标注',items:[
+ I(L`\hat{x}`,0,'帽号：估计量、单位向量'),
+ I(L`\widehat{ABC}`,0,'宽帽号，可覆盖多个字符'),
+ I(L`\bar{x}`,0,'横线：样本均值、复共轭'),
+ I(L`\overline{AB}`,0,'长横线：均值、闭包、补集'),
+ I(L`\vec{v}`,0,'向量箭头'),
+ I(L`\overrightarrow{AB}`,0,'长箭头（向量）'),
+ I(L`\overleftarrow{AB}`,0,'反向长箭头'),
+ I(L`\tilde{x}`,0,'波浪号'),
+ I(L`\widetilde{ABC}`,0,'宽波浪号'),
+ I(L`\dot{x}`,0,'点（一阶时间导）'),
+ I(L`\ddot{x}`,0,'双点（二阶时间导）'),
+ I(L`\dddot{x}`,0,'三点（三阶导，amssymb）'),
+ I(L`\acute{a}`,0,'锐音符'),
+ I(L`\grave{a}`,0,'钝音符'),
+ I(L`\breve{a}`,0,'短音符'),
+ I(L`\check{a}`,0,'抑扬符'),
+ I(L`\mathring{a}`,0,'圆圈音符'),
+ I(L`\underline{x}`,0,'下划线'),
+ I(L`x^{\prime}`,0,'撇号（等同 f\' 的写法）'),
+ I(L`x^{*}`,0,'星号：对偶、共轭、最优值'),
+ I(L`x^{\top}`,0,'转置（\top 或 \mathrm{T}）'),
+ I(L`x^{\dagger}`,0,'共轭转置 †'),
+ I(L`\cancel{x}`,0,'划掉（需 cancel 宏包）'),
+ I(L`a \overset{?}{=} b`,0,'在等号上方加问号等标注'),
+ I(L`\underset{n\to\infty}{\longrightarrow}`,0,'在箭头下方加条件')
+]},
+
+{id:'matrix',name:'十五、矩阵、行列式与分段函数',hint:'& 分隔列，\\\\ 换行',items:[
+ D(L`\begin{pmatrix} a & b \\ c & d \end{pmatrix}`,
+   L`\begin{pmatrix} a & b \\ c & d \end{pmatrix}`,'pmatrix：圆括号矩阵'),
+ D(L`\begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix}`,
+   L`\begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix}`,'bmatrix：方括号矩阵'),
+ D(L`\begin{Bmatrix} a & b \\ c & d \end{Bmatrix}`,
+   L`\begin{Bmatrix} a & b \\ c & d \end{Bmatrix}`,'Bmatrix：花括号矩阵'),
+ D(L`\begin{vmatrix} a & b \\ c & d \end{vmatrix}`,
+   L`\begin{vmatrix} a & b \\ c & d \end{vmatrix}`,'vmatrix：单竖线（行列式）'),
+ D(L`\begin{Vmatrix} a & b \\ c & d \end{Vmatrix}`,
+   L`\begin{Vmatrix} a & b \\ c & d \end{Vmatrix}`,'Vmatrix：双竖线（范数）'),
+ D(L`\begin{matrix} a & b \\ c & d \end{matrix}`,
+   L`\begin{matrix} a & b \\ c & d \end{matrix}`,'matrix：无括号裸矩阵'),
+ D(L`\left(\begin{smallmatrix} a & b \\ c & d \end{smallmatrix}\right)`,
+   L`\left(\begin{smallmatrix} a & b \\ c & d \end{smallmatrix}\right)`,'smallmatrix：行内小矩阵'),
+ D(L`\begin{array}{cc|c} a & b & e \\ c & d & f \end{array}`,
+   L`\begin{array}{cc|c} a & b & e \\ c & d & f \end{array}`,'array：最灵活，可画分块竖线；cc|c 为列格式'),
+ D(L`A = \begin{pmatrix} a_{11} & \cdots & a_{1n} \\ \vdots & \ddots & \vdots \\ a_{m1} & \cdots & a_{mn} \end{pmatrix}`,
+   L`A = \begin{pmatrix}
+  a_{11} & \cdots & a_{1n} \\
+  \vdots & \ddots  & \vdots \\
+  a_{m1} & \cdots & a_{mn}
+\end{pmatrix}`,'带省略号的一般矩阵，用 \vdots / \ddots / \cdots'),
+ D(L`f(x)=\begin{cases} x, & x\ge 0, \\ -x, & x<0. \end{cases}`,
+   L`f(x)=\begin{cases}
+  x,  & x\ge 0, \\
+  -x, & x<0.
+\end{cases}`,'cases：分段函数（& 前为值，& 后为条件）'),
+ D(L`\begin{dcases} x, & x\ge 0 \\ -x, & x<0 \end{dcases}`,
+   L`\begin{dcases}
+  x,  & x\ge 0, \\
+  -x, & x<0.
+\end{dcases}`,'dcases：行间公式大小的分段（需 mathtools）'),
+ D(L`\begin{rcases} a &= 1 \\ b &= 2 \end{rcases}\Rightarrow c=3`,
+   L`\begin{rcases}
+  a &= 1 \\
+  b &= 2
+\end{rcases}\Rightarrow c=3`,'rcases：右侧大括号（需 mathtools）')
+]},
+
+{id:'env',name:'十六、多行公式环境',hint:'全部需要 amsmath',items:[
+ D(L`\begin{equation}
+  E = mc^2
+\end{equation}`,L`\begin{equation}
+  E = mc^2
+\end{equation}`,'equation：单行带编号'),
+ D(L`\begin{align}
+  f(x) &= (x+1)^2 \nonumber \\
+       &= x^2 + 2x + 1
+\end{align}`,L`\begin{align}
+  f(x) &= (x+1)^2 \nonumber \\
+       &= x^2 + 2x + 1
+\end{align}`,'align：按 & 对齐；\\nonumber 抑制该行编号'),
+ D(L`\begin{align}
+  a &= b + c \\
+  c &= d + e
+\end{align}`,L`\begin{align*}
+  a &= b + c \\
+  c &= d + e
+\end{align*}`,'align*：整体不编号（加星号）'),
+ D(L`\begin{gather}
+  a = b \\
+  c = d
+\end{gather}`,L`\begin{gather}
+  a = b \\
+  c = d
+\end{gather}`,'gather：多行各自居中，不对齐'),
+ D(L`\begin{multline}
+  a + b + c + d + e \\
+  = f + g + h
+\end{multline}`,L`\begin{multline}
+  a + b + c + d + e \\
+  = f + g + h
+\end{multline}`,'multline：超长公式折行，首行左齐末行右齐'),
+ D(L`\begin{equation}\begin{split}
+  f(x) &= (x+1)^2 \\
+       &= x^2+2x+1
+\end{split}\end{equation}`,L`\begin{equation}
+  \begin{split}
+    f(x) &= (x+1)^2 \\
+         &= x^2+2x+1
+  \end{split}
+\end{equation}`,'split：嵌套在 equation 内，整块共用一个编号'),
+ D(L`\begin{alignat}{2}
+  x  &= 1 &\quad y  &= 2 \\
+  x' &= 3 &\quad y' &= 4
+\end{alignat}`,L`\begin{alignat}{2}
+  x  &= 1  &\quad y  &= 2 \\
+  x' &= 3  &\quad y' &= 4
+\end{alignat}`,'alignat：多列对齐，{2} 为列对数'),
+ C(L`\begin{subequations}
+\begin{align}
+  a &= b \\
+  c &= d
+\end{align}
+\end{subequations}`,
+   'subequations：子编号 1a、1b（amsmath）'),
+ C(L`\begin{align}
+  a &= b \tag{*} \\
+  c &= d \label{eq:key}
+\end{align}
+由 \eqref{eq:key} 可知 …`,
+   '\\tag 自定义编号；\\label + \\eqref 交叉引用（推荐用 \\eqref 而非 \\ref，自带括号）'),
+ C(L`\numberwithin{equation}{section}`,
+   '导言区设置：公式按章节编号（如 (2.3)），需 amsmath')
+]},
+
+{id:'func',name:'十七、常用函数名',hint:'务必用命令而非手打，否则会被排成斜体变量相乘',items:[
+ I(L`\sin x`,0,'正弦'),
+ I(L`\cos x`,0,'余弦'),
+ I(L`\tan x`,0,'正切'),
+ I(L`\cot x`,0,'余切'),
+ I(L`\sec x`,0,'正割'),
+ I(L`\csc x`,0,'余割'),
+ I(L`\arcsin x`,0,'反正弦（勿写 sin^{-1}）'),
+ I(L`\arccos x`,0,'反余弦'),
+ I(L`\arctan x`,0,'反正切'),
+ I(L`\sinh x`,0,'双曲正弦'),
+ I(L`\cosh x`,0,'双曲余弦'),
+ I(L`\tanh x`,0,'双曲正切'),
+ I(L`\coth x`,0,'双曲余切'),
+ I(L`\log x`,0,'对数（一般底）'),
+ I(L`\log_{2} n`,0,'带底的对数'),
+ I(L`\ln x`,0,'自然对数'),
+ I(L`\lg x`,0,'常用对数（以 10 为底）'),
+ I(L`\exp(x)`,0,'指数函数，指数较长时用它'),
+ I(L`\max`,0,'最大值'),
+ I(L`\min`,0,'最小值'),
+ I(L`\sup`,0,'上确界'),
+ I(L`\inf`,0,'下确界'),
+ I(L`\lim`,0,'极限'),
+ I(L`\det`,0,'行列式'),
+ I(L`\dim`,0,'维数'),
+ I(L`\ker`,0,'核'),
+ I(L`\deg`,0,'次数'),
+ I(L`\gcd`,0,'最大公约数'),
+ I(L`\Pr`,0,'概率'),
+ I(L`\operatorname{Var}`,0,'自定义算子名的通用写法')
+]},
+
+{id:'space',name:'十八、间距微调与对齐',items:[
+ I(L`a\,b`,0,'\, 细空格（3/18 em）'),
+ I(L`a\:b`,0,'\: 中空格（4/18 em）'),
+ I(L`a\;b`,0,'\; 粗空格（5/18 em）'),
+ I(L`a\!b`,0,'\! 负空格（-3/18 em），收紧'),
+ I(L`a\quad b`,0,'1 em 空格'),
+ I(L`a\qquad b`,0,'2 em 空格'),
+ I(L`a\hspace{1cm}b`,0,'自定义水平间距'),
+ I(L`\phantom{xxx}`,0,'占位：留出与 xxx 等宽的空间'),
+ I(L`\hphantom{x}`,0,'只占水平宽度，不显示内容'),
+ I(L`\vphantom{x}`,0,'只占高度（撑高行距）'),
+ I(L`\mspace{18mu}`,0,'以 mu 为单位的间距（1em=18mu）'),
+ D(L`f(x)\,\mathrm{d}x`,L`f(x)\,\mathrm{d}x`,
+   '积分中被积函数与 d 之间应加 \\, 细空格'),
+ D(L`\int_0^1\! f(x)\,\mathrm{d}x`,L`\int_0^1\! f(x)\,\mathrm{d}x`,
+   '\\! 收紧积分号与函数间的多余空隙')
+]},
+
+{id:'misc',name:'十九、编号、引用与定理环境',items:[
+ C(L`\label{eq:energy}
+E = mc^2
+
+见式 \eqref{eq:energy}`,'交叉引用：\\label 放在公式内，\\eqref 引用（自动带括号）'),
+ C(L`\begin{equation}
+a = b \tag{$\star$}
+\end{equation}`,'\\tag{…} 用任意符号替换编号'),
+ C(L`\begin{align}
+a &= b \nonumber \\
+c &= d
+\end{align}`,'\\nonumber（或 \\notag）让该行不编号'),
+ C(L`\usepackage{amsthm}
+\newtheorem{theorem}{定理}[section]
+\newtheorem{definition}[theorem]{定义}
+\newtheorem{lemma}[theorem]{引理}
+\newtheorem{corollary}[theorem]{推论}
+\newtheorem{proposition}[theorem]{命题}
+\newtheorem{example}[theorem]{例}
+\newtheorem{remark}[theorem]{注}`,
+   '定理类环境：[section] 表示按节编号，[theorem] 表示与上者共用计数器'),
+ C(L`\begin{theorem}[中值定理]
+设 f 在 [a,b] 上连续，则 …
+\end{theorem}
+
+\begin{proof}
+由罗尔定理即得。
+\end{proof}`,'proof 环境自动带「证明」与证毕符号 □'),
+ C(L`\begin{proof}
+结论显然。\qedhere
+\end{proof}`,'\\qedhere：当证明以公式/列表结尾时手动放置证毕符'),
+ C(L`\renewcommand{\qedsymbol}{$\blacksquare$}`,'导言区更换证毕符号样式')
+]},
+
+{id:'pkg',name:'二十、推荐宏包与导言区模板',items:[
+ C(L`\usepackage{amsmath}    % 多行公式环境、\text、\iint
+\usepackage{amssymb}    % \mathbb \mathcal \varnothing \nleq 等符号
+\usepackage{amsfonts}   % 数学字体
+\usepackage{mathtools}  % amsmath 增强：\coloneqq dcases \underbrace 修正
+\usepackage{bm}         % \bm 粗体（比 \boldsymbol 更可靠）
+\usepackage{amsthm}     % 定理、证明环境
+\usepackage{physics}    % 可选：\dv \pdv \grad \norm \abs 等速写
+\usepackage{siunitx}    % 可选：单位排版 \SI{9.8}{m/s^2}`,
+   '数学写作的「标配」导言区，按需取用'),
+ C(L`% 行内公式：$E = mc^2$
+% 行间公式：\[ E = mc^2 \]   或   $$ E = mc^2 $$
+% 推荐用 \[...\] 而非 $$...$$（后者在 LaTeX 中间距略有差异）
+
+% 编号按章节：(2.3)
+\numberwithin{equation}{section}`,'公式输入的三种方式与编号设置'),
+ C(L`% 常见排版规范
+\mathrm{d}x        % 微分 d 用正体
+\,\mathrm{d}x      % 与函数间加细空格
+\operatorname{Var} % 自定义算子名用正体
+\mathbb{R}         % 数集用空心体
+\quad \text{而非} \quad
+R                 % 直接写 R 会排成斜体变量`,'最容易被审稿人挑出来的几处细节')
+]}
+];
+
+function build(){
+  const toc=document.getElementById('toc'), main=document.getElementById('content');
+  S.forEach(function(sec){
+    const a=document.createElement('a');
+    a.href='#'+sec.id; a.textContent=sec.name; toc.appendChild(a);
+
+    const s=document.createElement('section'); s.id=sec.id;
+    const h=document.createElement('h2'); h.textContent=sec.name;
+    if(sec.hint){const sp=document.createElement('span'); sp.textContent=sec.hint; h.appendChild(sp);}
+    s.appendChild(h);
+
+    const g=document.createElement('div'); g.className='grid';
+    sec.items.forEach(function(it){
+      if(it.o){
+        const d=document.createElement('div'); d.className='demo';
+        const t=document.createElement('div'); t.className='note'; t.textContent=it.n;
+        const p=document.createElement('pre'); p.className='code'; p.textContent=it.c;
+        d.appendChild(t); d.appendChild(p); s.appendChild(d);
+      }else if(it.d){
+        const d=document.createElement('div'); d.className='demo';
+        const r=document.createElement('div'); r.className='rt'; r.textContent='$$'+it.t+'$$';
+        const p=document.createElement('pre'); p.className='code'; p.textContent=it.c;
+        const t=document.createElement('div'); t.className='note'; t.textContent=it.n;
+        d.appendChild(r); d.appendChild(p); d.appendChild(t); s.appendChild(d);
+      }else{
+        const d=document.createElement('div'); d.className='item';
+        const r=document.createElement('div'); r.className='sym'; r.textContent='$'+it.t+'$';
+        const p=document.createElement('div'); p.className='code'; p.textContent=it.c;
+        const t=document.createElement('div'); t.className='note'; t.textContent=it.n;
+        d.appendChild(r); d.appendChild(p); d.appendChild(t); g.appendChild(d);
+      }
+    });
+    if(g.children.length) s.appendChild(g);
+    main.appendChild(s);
+  });
+}
+
+build();
+if(window.__ts){window.__ts();}else{window.__pending=true;}
+
+document.getElementById('q').addEventListener('input',function(e){
+  const v=e.target.value.trim().toLowerCase();
+  document.querySelectorAll('section').forEach(function(sec){
+    let vis=0;
+    sec.querySelectorAll('.item,.demo').forEach(function(el){
+      const hit=(!v)||el.textContent.toLowerCase().indexOf(v)>=0;
+      el.classList.toggle('hide',!hit);
+      if(hit) vis++;
+    });
+    sec.classList.toggle('hide',vis===0);
+  });
+});
+
+let tt;
+function toast(m){
+  const el=document.getElementById('toast');
+  el.textContent=m; el.classList.add('on');
+  clearTimeout(tt); tt=setTimeout(function(){el.classList.remove('on');},1300);
+}
+document.addEventListener('click',function(e){
+  const t=e.target.closest?e.target.closest('.code'):null;
+  if(!t) return;
+  const txt=t.textContent;
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(function(){toast('已复制');},function(){toast('复制失败，请手动选中');});
+  }else{toast('请手动选中复制');}
+});
+document.getElementById('pb').addEventListener('click',function(){window.print();});
+</script>
+
+<script>
+(function(){
+  function load(u,fb){
+    var s=document.createElement('script');
+    s.src=u; s.async=true;
+    s.onerror=function(){ if(fb) load(fb,null); };
+    document.head.appendChild(s);
+  }
+  load('https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js',
+       'https://unpkg.com/mathjax@3/es5/tex-svg.js');
+})();
+</script>
+</body>
+</html>
